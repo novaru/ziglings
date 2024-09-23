@@ -32,7 +32,7 @@ fn makeNumber() MyErr!u32 {
 
     // Please make the "failed" message print ONLY if the makeNumber()
     // function exits with an error:
-    std.debug.print("failed!\n", .{});
+    errdefer std.debug.print("failed!\n", .{});
 
     var num = try getNumber(); // <-- This could fail!
 
@@ -43,7 +43,7 @@ fn makeNumber() MyErr!u32 {
     return num;
 }
 
-fn getNumber() MyErr!u32 {
+fn getNumber() !u32 {
     // I _could_ fail...but I don't!
     return 4;
 }
