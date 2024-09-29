@@ -43,8 +43,8 @@ pub fn main() void {
     // are inserted at compile time into the executable code. The
     // IDENTIFIERS "const_int" and "const_float" don't exist in
     // our compiled application!
-    const const_int = 12345;
-    const const_float = 987.654;
+    const const_int: comptime_int = 12345;
+    const const_float: comptime_float = 987.654;
 
     print("Immutable: {}, {d:.3}; ", .{ const_int, const_float });
 
@@ -62,8 +62,8 @@ pub fn main() void {
     // types with specific sizes. The comptime numbers will be
     // coerced (if they'll fit!) into your chosen runtime types.
     // For this it is necessary to specify a size, e.g. 32 bit.
-    var var_int = 12345;
-    var var_float = 987.654;
+    var var_int: u32 = 12345;
+    var var_float: f32 = 987.654;
 
     // We can change what is stored at the areas set aside for
     // "var_int" and "var_float" in the running compiled program.
