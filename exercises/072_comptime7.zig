@@ -35,7 +35,7 @@ pub fn main() void {
     // at compile time.
     //
     // Please fix this to loop once per "instruction":
-    ??? (i < instructions.len) : (???) {
+    inline while (i < instructions.len) : (i += 3) {
 
         // This gets the digit from the "instruction". Can you
         // figure out why we subtract '0' from it?
@@ -47,7 +47,7 @@ pub fn main() void {
             '+' => value += digit,
             '-' => value -= digit,
             '*' => value *= digit,
-            else => unreachable,
+            else => continue,
         }
         // ...But it's quite a bit more exciting than it first appears.
         // The 'inline while' no longer exists at runtime and neither
