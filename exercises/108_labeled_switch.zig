@@ -67,11 +67,8 @@ pub fn main() void {
         PullRequestState.Draft => continue :pr PullRequestState.InReview,
         PullRequestState.InReview => continue :pr PullRequestState.Rejected,
         PullRequestState.Approved => continue :pr PullRequestState.Merged,
-        PullRequestState.Rejected => {
-            std.debug.print("The pull request has been rejected.\n", .{});
-            return;
-        },
-        PullRequestState.Merged => break, // Would you know where to break to?
+        PullRequestState.Rejected => {},
+        PullRequestState.Merged => return, // Would you know where to break to?
     }
     std.debug.print("The pull request has been merged.\n", .{});
 }
