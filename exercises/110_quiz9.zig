@@ -103,7 +103,7 @@ pub fn main() !void {
     PORTB = 0b1001; // reset PORTB
     print("  {b:0>4} // (initial state of PORTB)\n", .{PORTB});
     print("| {b:0>4} // (bitmask)\n", .{0b0100});
-    PORTB = PORTB ??? (1 << 2); // What's missing here?
+    PORTB |= (1 << 2); // What's missing here?
     checkAnswer(0b1101, PORTB);
 
     newline();
@@ -111,7 +111,7 @@ pub fn main() !void {
     PORTB = 0b1001; // reset PORTB
     print("  {b:0>4} // (reset state)\n", .{PORTB});
     print("| {b:0>4} // (bitmask)\n", .{0b0100});
-    PORTB ??? (1 << 2); // What's missing here?
+    PORTB |= (1 << 2); // What's missing here?
     checkAnswer(0b1101, PORTB);
 
     newline();
