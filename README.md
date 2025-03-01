@@ -10,12 +10,10 @@ Those broken programs need your help! (You'll also save the
 planet from evil aliens and help some friendly elephants stick
 together, which is very sweet of you.)
 
-This project was directly inspired by the brilliant and fun
-[rustlings](https://github.com/rust-lang/rustlings)
-project for the [Rust](https://www.rust-lang.org/) language.
-Indirect inspiration comes from [Ruby Koans](http://rubykoans.com/)
-and the Little LISPer/Little Schemer series of books.
-Ziglings was initiated by [Dave Gauer](https://ratfactor.com/).
+This project was initiated by [Dave Gauer](https://ratfactor.com/) and is directly inspired
+by the brilliant and fun [rustlings](https://github.com/rust-lang/rustlings) project.
+Indirect inspiration comes from [Ruby Koans](http://rubykoans.com/) and the Little LISPer/Little
+Schemer series of books.
 
 ## Intended Audience
 
@@ -53,14 +51,14 @@ $ zig version
 Clone this repository with Git:
 
 ```
-$ git clone https://ziglings.org
-$ cd ziglings.org
+git clone https://codeberg.org/ziglings/exercises.git ziglings
+cd ziglings
 ```
 
 Then run `zig build` and follow the instructions to begin!
 
 ```
-$ zig build
+zig build
 ```
 
 Note: The output of Ziglings is the unaltered output from the Zig
@@ -175,6 +173,11 @@ zig build -Dn=19 -l
   ...
 ```
 
+To reset the progress (have it run all the exercises that have already been completed):
+```
+zig build -Dreset
+```
+
 ## What's Covered
 
 The primary goal for Ziglings is to cover the core Zig language.
@@ -232,6 +235,7 @@ Zig Core Language
 * [X] Working with C
 * [X] Threading
 * [x] Labeled switch
+* [x] Vector operations (SIMD)
 
 Zig Standard Library
 

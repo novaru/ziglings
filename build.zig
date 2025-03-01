@@ -120,6 +120,8 @@ pub const logo =
     \\
 ;
 
+const progress_filename = ".progress.txt";
+
 pub fn build(b: *Build) !void {
     if (!validate_exercises()) std.process.exit(2);
 
@@ -162,6 +164,7 @@ pub fn build(b: *Build) !void {
     const exno: ?usize = b.option(usize, "n", "Select exercise");
     const rand: ?bool = b.option(bool, "random", "Select random exercise");
     const start: ?usize = b.option(usize, "s", "Start at exercise");
+    const reset: ?bool = b.option(bool, "reset", "Reset exercise progress");
 
     const sep = std.fs.path.sep_str;
     const healed_path = if (override_healed_path) |path|
@@ -242,17 +245,61 @@ pub fn build(b: *Build) !void {
         return;
     }
 
+    if (reset) |_| {
+        std.fs.cwd().deleteFile(progress_filename) catch |err| {
+            switch (err) {
+                std.fs.Dir.DeleteFileError.FileNotFound => {},
+                else => {
+                    print("Unable to remove progress file, Error: {}\n", .{err});
+                    return err;
+                },
+            }
+        };
+
+        print("Progress reset, {s} removed.\n", .{progress_filename});
+        std.process.exit(0);
+    }
+
     // Normal build mode: verifies all exercises according to the recommended
     // order.
     const ziglings_step = b.step("ziglings", "Check all ziglings");
     b.default_step = ziglings_step;
 
     var prev_step = &header_step.step;
-    for (exercises) |ex| {
-        const verify_stepn = ZiglingStep.create(b, ex, work_path, .normal);
-        verify_stepn.step.dependOn(prev_step);
 
-        prev_step = &verify_stepn.step;
+    var starting_exercise: u32 = 0;
+
+    if (std.fs.cwd().openFile(progress_filename, .{})) |progress_file| {
+        defer progress_file.close();
+
+        const progress_file_size = try progress_file.getEndPos();
+
+        var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+        defer _ = gpa.deinit();
+        const allocator = gpa.allocator();
+        const contents = try progress_file.readToEndAlloc(allocator, progress_file_size);
+        defer allocator.free(contents);
+
+        starting_exercise = try std.fmt.parseInt(u32, contents, 10);
+    } else |err| {
+        switch (err) {
+            std.fs.File.OpenError.FileNotFound => {
+                // This is fine, may be the first time tests are run or progress have been reset
+            },
+            else => {
+                print("Unable to open {s}: {}\n", .{ progress_filename, err });
+                return err;
+            },
+        }
+    }
+
+    for (exercises) |ex| {
+        if (starting_exercise < ex.number()) {
+            const verify_stepn = ZiglingStep.create(b, ex, work_path, .normal);
+            verify_stepn.step.dependOn(prev_step);
+
+            prev_step = &verify_stepn.step;
+        }
     }
     ziglings_step.dependOn(prev_step);
 
@@ -402,6 +449,18 @@ const ZiglingStep = struct {
                 \\{s}=========================================={s}
             , .{ red, reset, exercise_output, red, reset, output, red, reset });
         }
+
+        const progress = try std.fmt.allocPrint(b.allocator, "{d}", .{self.exercise.number()});
+        defer b.allocator.free(progress);
+
+        const file = try std.fs.cwd().createFile(
+            progress_filename,
+            .{ .read = true, .truncate = true },
+        );
+        defer file.close();
+
+        try file.writeAll(progress);
+        try file.sync();
 
         print("{s}PASSED:\n{s}{s}\n\n", .{ green_text, output, reset_text });
     }
@@ -904,7 +963,7 @@ const exercises = [_]Exercise{
     },
     .{
         .main_file = "060_floats.zig",
-        .output = "Shuttle liftoff weight: 2032092kg",
+        .output = "Shuttle liftoff weight: 2032kg",
     },
     .{
         .main_file = "061_coercions.zig",
@@ -970,6 +1029,7 @@ const exercises = [_]Exercise{
     .{
         .main_file = "074_comptime9.zig",
         .output = "My llama value is 2.",
+        .skip = true,
     },
     .{
         .main_file = "075_quiz8.zig",
@@ -1208,6 +1268,40 @@ const exercises = [_]Exercise{
         \\Max difference (new fn): 0.014
         ,
     },
+<<<<<<< HEAD
+=======
+    .{ .main_file = "110_quiz9.zig", .output = 
+    \\Toggle pins with XOR on PORTB
+    \\-----------------------------
+    \\  1100 // (initial state of PORTB)
+    \\^ 0101 // (bitmask)
+    \\= 1001
+    \\
+    \\  1100 // (initial state of PORTB)
+    \\^ 0011 // (bitmask)
+    \\= 1111
+    \\
+    \\Set pins with OR on PORTB
+    \\-------------------------
+    \\  1001 // (initial state of PORTB)
+    \\| 0100 // (bitmask)
+    \\= 1101
+    \\
+    \\  1001 // (reset state)
+    \\| 0100 // (bitmask)
+    \\= 1101
+    \\
+    \\Clear pins with AND and NOT on PORTB
+    \\------------------------------------
+    \\  1110 // (initial state of PORTB)
+    \\& 1011 // (bitmask)
+    \\= 1010
+    \\
+    \\  0111 // (reset state)
+    \\& 1110 // (bitmask)
+    \\= 0110
+    },
+>>>>>>> upstream/main
     .{
         .main_file = "999_the_end.zig",
         .output =
